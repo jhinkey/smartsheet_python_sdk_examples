@@ -25,15 +25,15 @@ def main() -> None:
 
         for child in response.data:
             object_type = None
-            if isinstance(child, Folder):
+            if type(child) is Folder:
                 object_type = "Folder"
-            elif isinstance(child, Sheet):
+            elif type(child) is Sheet:
                 object_type = "Sheet"
-            elif isinstance(child, Report):
+            elif type(child) is Report:
                 object_type = "Report"
-            elif isinstance(child, Sight):
+            elif type(child) is Sight:
                 object_type = "Sight"
-            elif isinstance(child, Template):
+            elif type(child) is Template:
                 object_type = "Template"
             else:
                 object_type = "Unknown"
