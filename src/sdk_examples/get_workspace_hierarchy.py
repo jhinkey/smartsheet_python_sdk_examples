@@ -21,7 +21,7 @@ class TreeNode:
         for child in self.children:
             child.print_hierarchy(level + 1)
 
-def expand_tree(smart: smartsheet.Smartsheet, tree_node: TreeNode):
+def expand_tree(smart: smartsheet.Smartsheet, folder_node: TreeNode):
     # Recursively get each folder's child folders
     last_key = None
 
@@ -38,14 +38,14 @@ def expand_tree(smart: smartsheet.Smartsheet, tree_node: TreeNode):
             for child in response.data:
                 if type(child) is Folder:
                     new_node = TreeNode(child.name, child.id)
-                    tree_node.add_node(new_node)
+                    folder_node.add_node(new_node)
                     traverse_folder(new_node)
             
             last_key = getattr(response, "last_key", None)
             if not last_key:
                 break
         
-    traverse_folder(tree_node)
+    traverse_folder(folder_node)
 
 def main() -> None:
     parser = argparse.ArgumentParser()
@@ -61,7 +61,7 @@ def main() -> None:
     smart = smartsheet.Smartsheet(token)
 
     # Build a tree to store the workspace folder hierarchy
-    tree_root = TreeNode("Workspace", workspace_id)
+    workspace_tree = TreeNode("Workspace", workspace_id)
     
     # Page through results based on the token called last_key. None value gets the first page.
     last_key = None
@@ -75,14 +75,14 @@ def main() -> None:
         for child in response.data:
             if type(child) is Folder:
                 new_node = TreeNode(child.name, child.id)
-                tree_root.add_node(new_node)
+                workspace_tree.add_node(new_node)
                 expand_tree(smart, new_node)
 
         last_key = getattr(response, "last_key", None)
         if not last_key:
             break
 
-    tree_root.print_hierarchy()
+    workspace_tree.print_hierarchy()
 
 if __name__ == "__main__":
     main()
