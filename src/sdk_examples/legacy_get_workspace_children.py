@@ -15,22 +15,35 @@ def main() -> None:
     workspace_id = args.workspace_id
 
     smart = smartsheet.Smartsheet(token)
+
+    workspace = None
+    folders = []
+    sheets = []
+    reports = []
+    sights = []
+    templates = []
  
-    workspace = smart.Workspaces.get_workspace(
-        workspace_id
-    )
-    assert isinstance(workspace, smartsheet.models.workspace.Workspace)
+    response = smart.Workspaces.get_workspace(workspace_id)
+    assert isinstance(response, smartsheet.models.workspace.Workspace)
 
-    for child in workspace.folders:
-        print(f"Folder: {child.name}")
-    for child in workspace.sheets:
-        print(f"Sheet: {child.name}")
-    for child in workspace.reports or []:
-        print(f"Report: {child.name}")
-    for child in workspace.sights or []:
-        print(f"Sight: {child.name}")
-    for child in workspace.templates or []:
-        print(f"Template: {child.name}")
+    workspace = response.name, response.id, response.permalink, response.access_level
 
+    for child in response.folders:
+        folders.append(child)
+    for child in response.sheets:
+        sheets.append(child)
+    for child in response.reports or []:
+        reports.append(child)
+    for child in response.sights or []:
+        sights.append(child)
+    for child in response.templates or []:
+        templates.append(child)
+    
+    print(f"workspace: {workspace}")
+    print(f"folders: {folders}")
+    print(f"sheets: {sheets}")
+    print(f"reports: {reports}")
+    print(f"sights: {sights}")
+    print(f"templates: {templates}")
 if __name__ == "__main__":
     main()

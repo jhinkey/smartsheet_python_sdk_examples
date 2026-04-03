@@ -16,33 +16,50 @@ def main() -> None:
 
     smart = smartsheet.Smartsheet(token)
 
+    workspace = None
+    folders = []
+    sheets = []
+    reports = []
+    sights = []
+    templates = []
+
+    response = smart.Workspaces.get_workspace_metadata(workspace_id)
+    assert isinstance(response, smartsheet.models.workspace.Workspace)
+
+    workspace = response.name, response.id, response.permalink, response.access_level, response.created_at, response.modified_at
+
     last_key = None
     while True:
         response = smart.Workspaces.get_workspace_children(
             workspace_id, last_key=last_key
         )
-        assert isinstance(response, smartsheet.models.paginated_children_result.PaginatedChildrenResult)
+        assert isinstance(
+            response,
+            smartsheet.models.paginated_children_result.PaginatedChildrenResult
+        )
 
         for child in response.data:
-            object_type = None
             if type(child) is Folder:
-                object_type = "Folder"
+                folders.append(child)
             elif type(child) is Sheet:
-                object_type = "Sheet"
+                sheets.append(child)
             elif type(child) is Report:
-                object_type = "Report"
+                reports.append(child)
             elif type(child) is Sight:
-                object_type = "Sight"
+                sights.append(child)
             elif type(child) is Template:
-                object_type = "Template"
-            else:
-                object_type = "Unknown"
-
-            print(f"{object_type}: {child.name}")
+                templates.append(child)
 
         last_key = getattr(response, "last_key", None)
         if not last_key:
             break
+
+    print(f"workspace: {workspace}")
+    print(f"folders: {folders}")
+    print(f"sheets: {sheets}")
+    print(f"reports: {reports}")
+    print(f"sights: {sights}")
+    print(f"templates: {templates}")
 
 if __name__ == "__main__":
     main()
