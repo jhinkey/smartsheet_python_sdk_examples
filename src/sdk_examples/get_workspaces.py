@@ -12,9 +12,10 @@ def main() -> None:
     smart = smartsheet.Smartsheet(token)
 
     last_key = None
-    while last_key != "":
+    while True:
         page = smart.Workspaces.list_workspaces(
             pagination_type='token',
+            max_items=100,
             last_key=last_key
         )
         assert isinstance(page, smartsheet.models.IndexResult)
